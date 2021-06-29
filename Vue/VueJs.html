@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Proficiencia VueJS</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <div>
+            <h3>Formulario de Inscricao:</h3><br>
+            <input type="text" id="inputNome" placeholder="Nome"><br>
+            <input type="text" id="inputCategoria" placeholder="Categoria"><br>
+            <input type="text" id="inputCodigo" placeholder="Codigo"><br>
+            <input type="text" id="inputAutor" placeholder="Autor"><br>
+            <select id="inputEbook" v-model="ebook">
+                <option value=false>Livro físico</option>
+                <option value=true>E-book</option>
+            </select><br>
+            <input type="hidden" id="inputTamanho" placeholder="Tamanho">
+            <input type="number" id="inputPeso" placeholder="Peso"><br>
+            <button @click="salvar()">Salvar</button>
+        </div>
+
+        <hr>
+
+        <tabela :livros="novaLista" :deletar="deletar" :editar="editar"></tabela>
+
+    </div>
+    <script>
+
+        Vue.component('tabela', {
+            props: [
+                'livros',
+                'deletar',
+                'editar'
+            ],
+            template: `
+            <table border="1px solid black">
+                <tr>
+                    <td>Nome | Categoria</td>
+                    <td>Autor</td>
+                </tr>
+                <tr v-for="livro in livros">
+                    <td>{{livro.nomeCategoria}}</td>
+                    <td>{{livro.autor}}</td>
+                    <button @click="editar(livros.indexOf(livro))">Editar</button>
+                    <button @click="deletar(livros.indexOf(livro))">Apagar</button>                    
+                </tr>
+            </table>
+            `,
+        })
+
+        const vm = new Vue({
+            el: '#app',
+            data: {
+                ebook: false,        
+                livros: [
+
+                ]
+            },
+            methods: {
+                salvar() {
+                    this.livros.push(
+                        {
+                            nome: inputNome.value,
+                            categoria: inputCategoria.value,
+                            codigo: inputCodigo.value,
+                            autor: inputAutor.value,
+                            ebook: inputEbook.value,
+                            tamanho: inputTamanho.value,
+                            peso: inputPeso.value
+
+                        }
+                    
+                    );
+                    inputNome.value = '';
+                    inputCategoria.value = '';
+                    inputCodigo.value = '';
+                    inputAutor.value = '';
+                    inputEbook.value = false;
+                    inputTamanho.value = '';
+                    inputPeso.value = '';
+                },
+                editar(e) {
+                    inputNome.value = this.livros[e].nome;
+                    inputCategoria.value = this.livros[e].categoria;
+                    inputCodigo.value = this.livros[e].codigo;
+                    inputAutor.value = this.livros[e].autor;
+                    inputEbook.value = this.livros[e].ebook;
+                    this.ebook = this.livros[e].ebook;
+                    inputTamanho.value = this.livros[e].tamanho;
+                    inputPeso.value = this.livros[e].peso;
+                    this.deletar(e);
+                },
+                deletar(e) {
+                    this.livros.splice(e, 1);
+                },
+            },
+            computed: {
+                novaLista() {
+                    let novaLista = [];
+                    for (let index = 0; index < this.livros.length; index++) {
+                        novaLista.push({
+                            nomeCategoria: this.livros[index].nome + ' | ' + this.livros[index].categoria,
+                            autor: this.livros[index].autor
+                        })        
+                    }
+                    return novaLista;
+                }
+            },
+            watch: {
+                ebook(valorNovo) {
+                    if (valorNovo == "true") {
+                        inputPeso.type = 'hidden';
+                        inputPeso.value = '';
+                        inputTamanho.type = 'number';
+                    } else {
+                        inputTamanho.type = 'hidden';
+                        inputTamanho.value = '';
+                        inputPeso.type = 'number';
+                    }
+                }
+            }
+
+        })
+    </script>
+</body>
+</html>
